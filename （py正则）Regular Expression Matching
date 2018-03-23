@@ -1,0 +1,74 @@
+10. Regular Expression Matching
+________________________________________
+Implement regular expression matching with support for '.' and '*'.
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") → false
+isMatch("aa","aa") → true
+isMatch("aaa","aa") → false
+isMatch("aa", "a*") → true
+isMatch("aa", ".*") → true
+isMatch("ab", ".*") → true
+isMatch("aab", "c*a*b") → true
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        if (p.empty())
+            if (s.empty())
+                return true;
+            else
+                return false;
+        return match(s,p,0,0);
+    }
+    bool match(string& s,string& p,int i,int j)
+    {
+        while (i<s.size() && j<p.size()-1 && p[j+1]!='*')
+        {
+            if (s[i]==p[j] || p[j]=='.')
+            {
+                i++;
+                j++;
+            }
+            else
+                return false;
+        }
+        if (i<s.size() && j<p.size()-1)
+        {
+                if (match(s,p,i,j+2))
+                    return true;
+                if (s[i]==p[j])
+                {
+                    while (++i<=s.size() && s[i-1]==p[j])
+                    {
+                        if (match(s,p,i,j+2))
+                            return true; 
+                    }
+                    return false;
+                }                  
+                if (p[j]=='.')
+                    while (++i<=s.size())
+                        if (match(s,p,i,j+2))
+                            return true;
+                return false;
+            
+        }
+        if (i==s.size())
+        {
+            while (j<p.size()-1 && p[j+1]=='*')
+                j+=2;
+            if (j!=p.size())
+                return false;
+            return true;
+        }
+        if (i==s.size()-1 && (p[j]=='.' || s[i]==p[j]))
+            return true;
+        return false;
+    }
+};
