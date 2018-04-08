@@ -14,11 +14,11 @@ public:
         int l=0,temp=1,b=0;
         for (int i=1,j=0;i<s.size();i++,j=0)
         {
-            while (j<temp && s[b+j]!=s[i])
+            while (j<temp && s[b+j]!=s[i])//temp为暂时无重复的长度，s[i]为下一char。如果s[i]与从s[b]开始到s[i-1]都不相同，则纳入s[i],temp++
                 j++;
             if (j==temp)
                 temp++;
-            else
+            else//s[i]与前面s[b+j]相同，则s[b]到s[b+j]之间的char全都不能用。因此temp减少j，序列开始的位置b为b+j+1
             {
                 l=l>temp?l:temp;
                 temp-=j;
