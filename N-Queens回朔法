@@ -1,0 +1,58 @@
+The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
+
+Given an integer n, return all distinct solutions to the n-queens puzzle.
+
+Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space respectively.
+
+Example:
+
+Input: 4
+Output: [
+ [".Q..",  // Solution 1
+  "...Q",
+  "Q...",
+  "..Q."],
+
+ ["..Q.",  // Solution 2
+  "Q...",
+  "...Q",
+  ".Q.."]
+]
+Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above.
+不可同一条竖线、横线、斜线
+
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>>nqueens;
+        string line(n,'.');
+        vector<string>nqueen(n,line);
+        nqueens.push_back(nqueen);
+        trynqueens(0,n,nqueens);
+        nqueens.pop_back();
+        return nqueens;
+    }
+    void trynqueens(int newtry, int n, vector<vector<string>>&nqueens)
+    {
+        static string queen_can_go(n,-1);
+        if (newtry==n)
+        {
+            vector<string>nqueen(nqueens.back());
+            nqueens.push_back(nqueen);
+            return ;
+        }
+        for (int i=0,j=0;i<n;i++,j=0)
+        {
+            while (j<newtry && queen_can_go[j]!=i && queen_can_go[j]-j !=i-newtry && queen_can_go[j]+j!=i+newtry)
+                j++;
+            if (j!=newtry)
+                continue;
+            queen_can_go[newtry]=i;
+            nqueens.back()[newtry][i]='Q';
+            trynqueens(newtry+1,n,nqueens);
+            queen_can_go[newtry]=-1;
+            nqueens.back()[newtry][i]='.';
+        }
+    }
+
+};
