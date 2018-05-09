@@ -1,0 +1,44 @@
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+Example:
+
+Input: S = "ADOBECODEBANC", T = "ABC"
+Output: "BANC"
+Note:
+
+If there is no such window in S that covers all characters in T, return the empty string "".
+If there is such window, you are guaranteed that there will always be only one unique minimum window in S.
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        map<char,int>tt;
+        for (int i=0;i<t.size();i++)
+            tt[t[i]]++;//记录t中每个char需要配对的重复次数
+        int length=t.size();
+        int b=0,e=s.size()+1,b0=0,e0=0;
+        while (e0<s.size() || (e0==s.size() && !length))
+        {
+            if (length)//还没找到t中所有的char
+            {
+                if (tt.end()!=tt.find(s[e0]) && tt[s[e0]]-->0) //tt[s[e0]]>0说明该char还没配对完
+                    length--;
+                e0++;
+            }
+            while (!length)
+            {
+                if (tt.end()!=tt.find(s[b0]) && !tt[s[b0]]++)
+                {
+                    length++;
+                    if (e0-b0<=e-b)
+                    {
+                        e=e0;
+                        b=b0;
+                    }
+                }                   
+                b0++;
+            }
+        }
+        return e==s.size()+1?"":s.substr(b,e-b);
+    }
+};
