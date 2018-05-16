@@ -1,0 +1,40 @@
+Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and s2.
+
+Example 1:
+
+Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
+Output: true
+Example 2:
+
+Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"
+Output: false
+
+approach: Recursion with memoization :
+class Solution {
+public:
+    bool isInterleave(string s1, string s2, string s3) {
+        //如果s3[k]为s1[i]与s2[j]的合并，则s3[k-1]=s1[i-1]+s2[j] || s1[i]+s2[j-1]
+        //需要用一个2维数组存储已经尝试过的i,j组合。如果已经试过不行，则无需再次尝试
+        if (s1.size()+s2.size()!=s3.size())
+            return false;
+        vector<vector<int>>tried(s1.size(),vector<int>(s2.size(),1));
+        return inter(s1,s1.size()-1,s2,s2.size()-1,s3,s3.size()-1,tried);
+    }
+    bool inter(string& s1,int i,string&s2,int j,string& s3,int k,vector<vector<int>>&tried)
+    {
+        if (i==-1)
+            return !s2.compare(0,j+1,s3,0,k+1);
+        if (j==-1)
+            return !s1.compare(0,i+1,s3,0,k+1);
+        if (!tried[i][j])
+            return false;
+        if (s3[k]==s1[i] && inter(s1,i-1,s2,j,s3,k-1,tried))
+            return true;
+        if (s3[k]==s2[j] && inter(s1,i,s2,j-1,s3,k-1,tried))
+            return true;
+        tried[i][j]=0;
+        return false;
+    }
+};
+
+approach2:
