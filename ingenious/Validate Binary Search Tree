@@ -1,0 +1,40 @@
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+Assume a BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        if (!root)
+            return true;
+        TreeNode*p=NULL;
+        return validbst(root,p);
+    }
+    bool validbst(TreeNode*root,TreeNode*&p)
+    {
+        //一个合格的搜索二叉树，父节点除了要大于左节点，小于右节点外，还要大于左节点的最右子节点和小于右节点的最左子节点
+        if (root->left && (root->left->val>=root->val || !validbst(root->left,p)))
+            return false;
+        //当root->left==NULL时，代表root不再有左子节点，因此root为右子树的最左节点。由于在遍历所有左节点时p不变，因此此时p为最开始父节点，root为右节点的最左子节点
+        if (p && p->val>=root->val)
+            return false;   
+        p=root;
+        if(root->right && (root->right->val<=root->val || !validbst(root->right,p)))
+            return false;
+        //当root->right==NULL时，代表root不再有右子节点，因此p=root为左子树的最右节点。当一直返回到 if (p && p->val>=root->val)语句时，root为最开始父节点，p为左子树最右子节点
+        return true;
+    }
+};
