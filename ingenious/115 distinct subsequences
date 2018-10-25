@@ -1,0 +1,106 @@
+Given a string S and a string T, count the number of distinct subsequences of S which equals T.
+
+A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).
+
+Example 1:
+
+Input: S = "rabbbit", T = "rabbit"
+Output: 3
+Explanation:
+
+As shown below, there are 3 ways you can generate "rabbit" from S.
+(The caret symbol ^ means the chosen letters)
+
+rabbbit
+^^^^ ^^
+rabbbit
+^^ ^^^^
+rabbbit
+^^^ ^^^
+Example 2:
+
+Input: S = "babgbag", T = "bag"
+Output: 5
+Explanation:
+
+As shown below, there are 5 ways you can generate "bag" from S.
+(The caret symbol ^ means the chosen letters)
+
+babgbag
+^^ ^
+babgbag
+^^    ^
+babgbag
+^    ^^
+babgbag
+  ^  ^^
+babgbag
+    ^^^
+    
+    class Solution {
+public:
+    int numDistinct(string s, string t) {
+        if (t.size()>s.size())
+            return 0;
+        stack<int>st;
+        //find and push the first match location of s in stack.
+        for (tems=0,temt=0;temt!=t.size();temt++,tems++)
+        {
+            while (tems+t.size()-temt<=s.size() && s[tems]!=t[temt])
+                tems++;
+            if (tems+t.size()-temt>s.size())
+                return 0;
+            st.push(tems);
+        }
+        vector<int>count(s.size(),0);//count[i]记录的是s[i:]中找得到t[j:]的最大次数。当i=j=0时即为s中找得到j的最大次数
+        queue<int>qu;
+        qu.push(s.size());
+        qu.push(st.top());
+        int firstmatch,lastmatch,i=1,j=t.size()-1,number=1,lastnumber=0;
+        while (1)
+        {
+            lastmatch=qu.front();
+            qu.pop();
+            firstmatch=qu.front();
+            while (--lastmatch>firstmatch)
+            {
+                if (s[lastmatch]==t[j])
+                {
+                    //number是t[j+1:]在s中可以找到的最大次数
+                    count[lastmatch]=i*number+lastnumber;                    
+                    qu.push(lastmatch);
+                    i++;                   
+                }                  
+            }
+            //cout<<firstmatch<<" "<<st.top()<<" ";
+            if (firstmatch==st.top())
+            {
+                st.pop();
+                count[lastmatch]=i*number+lastnumber;
+                if (st.empty())
+                    return count[firstmatch];                
+                j--;       
+                    
+                qu.pop();
+                qu.push(firstmatch);
+                qu.push(st.top());
+                number=count[qu.front()];
+                lastnumber=0;
+            }
+            else
+            {
+                if (s[lastmatch]==t[j])//比如说s为bbbbb，t为bb时，则会进入该if
+                {
+                    int tem=i*number+lastnumber;
+                    number=count[firstmatch];
+                    count[lastmatch]=tem;                    
+                    qu.push(lastmatch);
+                }
+                else
+                    number=count[firstmatch];
+                lastnumber=count[qu.back()];//lastnumber是t[j:]在s[lastmatch:]中找到的最大次数,即接下来的一段开开始到s结尾处中找得到t[j:]的次数就等于下一段的段内次数加本段次数。
+            }                
+            i=1;                                 
+        }
+    }
+};
