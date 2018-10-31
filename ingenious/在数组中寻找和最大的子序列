@@ -1,0 +1,33 @@
+Static int
+Maxsubsum(const int a[], int left, int right)
+{
+	Int maxleft,maxright;//二分法 分别为左最大子序列与右最大子序列
+	Int maxleftborder=0,maxrightborder=0;//一定包括最右元素的左最大子序列与一定包括最左元素的右最大子序列
+	Int leftsum=0,rightsum=0;
+	Int center,I;
+	
+	If(left==right)
+		return max(0,a[left])
+		
+	center=(left+right)/2;
+	maxleft=Maxsubsum(a,left,center);
+	maxright=Maxsubsum(a,center+1,right);
+	
+	for( i=center;i>=left;i--)
+	{
+		Leftsum+=a[i];
+		If (leftsum>maxleftborder)
+			Maxleftborder=leftsum;
+	}
+	for( i=center+1;i<=right;i++)
+	{
+		righttsum+=a[i];
+		If (rightsum>maxrightborder)
+			Maxrightborder=rightsum;
+	}
+	
+	Return max(maxleft,maxright,maxleftborder+maxrightborder);
+}
+
+Int maxsubsumsequnce(const int a[], int n)
+Return maxsubsum(a,0,n-1);
