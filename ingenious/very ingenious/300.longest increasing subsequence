@@ -1,0 +1,52 @@
+Example:
+
+Input: [10,9,2,5,3,7,101,18]
+Output: 4 
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+
+/*
+When loop over the input array, every number n can serve two purposes: 
+(1) it can give a new max length record, if n is greater than current highest record; 
+(2) or it can lower the bar of a certain record so we can have better chance in the future to get a higher/longer record. T
+he values in the tails array are like state machine s0, s1, s2 and so on. 
+Thanks to its ascending order we can use binary search to find out whether n can give a new record or lower the bar of someone in logn time. 
+So the problem is all about establishing bar and lowering bar.
+*/
+/*
+tails[i]存放的是在nums中长度为i+1的所有连续递增子序列中，序列最后一个数的最小值。比如
+For example, say we have nums = [4,5,6,3], then all the available increasing subsequences are:
+len = 1   :      [4], [5], [6], [3]   => tails[0] = 3
+len = 2   :      [4, 5], [5, 6]       => tails[1] = 5
+len = 3   :      [4, 5, 6]            => tails[2] = 6
+目的在于对于一个新的元素x，它只要比长度为i+1的所有连续递增子序列中最小的那个大，它就能加入并延长该序列变为i+2。
+
+我们对nums中每一个元素依次进行查看并更新tails，则当对最后一个元素更新完毕时，tails的实际长度即为最长递增子序列长度。
+当对前一个元素更新完tails后，对于下一个元素x，我们需要找到i使tails[i-1]<x<tails[i]，如此则代表x最多可以加入长度为i的连续递增子序列
+而无法加入长度为i+1的连续递增子序列。由于x加入后长度为i的连续递增子序列的长度就变味i+1，且x<tails[i]，所以更新tails[i],令tails[i]=x
+由于tails中的元素是递增的，因此我们可以通过二分法快速找到合适的i以减少时间复杂度
+*/
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int>tails(nums.size(),INT_MIN);
+        int i,j,m,size=0;
+        for (auto k=begin(nums);k!=end(nums);k++)
+        {
+            i=0;
+            j=size+1;
+            while (i<j)
+            {
+                m=(i+j)/2;
+                if (tails[m]<*k)
+                    i=m+1;
+                else
+                    j=m;
+            }
+            tails[i]=*k;
+            if (i>size)
+                size++;
+        }
+        return size;
+    }
+};
