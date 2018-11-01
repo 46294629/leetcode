@@ -2,7 +2,7 @@ Static int
 Maxsubsum(const int a[], int left, int right)
 {
 	Int maxleft,maxright;//二分法 分别为左最大子序列与右最大子序列
-	Int maxleftborder=0,maxrightborder=0;//一定包括最右元素的左最大子序列与一定包括最左元素的右最大子序列
+	Int maxleftborder=0,maxrightborder=0;//包括左子序列的右最大子序列与右子序列的左最大子序列
 	Int leftsum=0,rightsum=0;
 	Int center,I;
 	
