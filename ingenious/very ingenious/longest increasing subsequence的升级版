@@ -1,0 +1,54 @@
+354.Russian Doll Envelopes
+You have a number of envelopes with widths and heights given as a pair of integers (w, h). One envelope can fit into another if and only if both the width and height of one envelope is greater than the width and height of the other envelope.
+
+What is the maximum number of envelopes can you Russian doll? (put one inside other)
+
+Note:
+Rotation is not allowed.
+
+Example:
+
+Input: [[5,4],[6,4],[6,7],[2,3]]
+Output: 3 
+Explanation: The maximum number of envelopes you can Russian doll is 3 ([2,3] => [5,4] => [6,7]).
+
+class Solution {
+public:
+    int maxEnvelopes(vector<pair<int, int>>& envelopes) {
+        if (envelopes.size()<2)
+            return (int)envelopes.size();
+        //先按照前面的大小进行排序，因此之后比较时后面的第一位总是要大于等于所有前面的第一位
+        sort(begin(envelopes),end(envelopes),[](const pair<int,int>& a, const pair<int,int>&b)
+             {
+                return ((a.first!=b.first)?(a.first<b.first):(a.second<b.second)); 
+             });
+        vector<vector<int>>tails{1,vector<int>{0}};
+        int size=1,b=0,e=size,m=0;
+        for (int i=1,j=-1;i<envelopes.size();i++)
+        {
+            b=0;
+            e=size;
+            while (b<e)
+            {
+                m=(e+b)/2;
+                while (++j<tails[m].size() && envelopes[i].second<=envelopes[tails[m][j]].second);
+                if (j==tails[m].size())
+                    e=m;
+                else if (envelopes[i].first==envelopes[tails[m][j]].first)
+                    continue;
+                else
+                    b=m+1;
+                j=-1;
+            }
+            if (e==size)
+                {
+                    tails.push_back(vector<int>{i});
+                    size++;
+                }   
+            //b不为0，代表envelopes[i]总是有比前面某个数要大的；而e==0，代表envelopes[i]无法容纳任何一个前面的数，因此需要当做一个可能的新的最前
+            else if (b || !e)                
+                tails[e].push_back(i);
+        }
+        return size;
+    }
+};
