@@ -1,0 +1,40 @@
+Given a string which contains only lowercase letters, remove duplicate letters so that every letter appear once and only once. You must make sure your result is the smallest in lexicographical order among all possible results.
+
+Example 1:
+
+Input: "bcabc"
+Output: "abc"
+Example 2:
+
+Input: "cbacdcbc"
+Output: "acdb"
+
+public:
+    string removeDuplicateLetters(string s) {
+        if (s.empty())
+            return "";
+        map<char,int>m;//存储s中每个元素出现的次数
+        map<char,bool>visited;//存储r中是否已经出现过该元素
+        for(auto& i:s)
+        {
+            m[i]++;
+            visited[i]=false;
+        }            
+        string r;
+        r.push_back('a'-1);
+        for(auto& i:s)
+        {
+            m[i]--;
+            if (visited[i])
+                continue;
+            while (i<r.back() && m[r.back()])//当后面的元素小于前面的元素，且前面的元素在后面还有重复时，应该舍弃这些前面较大的元素，让小的在前
+            {
+                visited[r.back()]=false;
+                r.pop_back();
+            }                
+            r.push_back(i);
+            visited[i]=true;
+        }
+        return r.substr(1);
+    }
+};
