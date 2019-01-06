@@ -1,0 +1,70 @@
+Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.
+
+Note:
+A naive algorithm of O(n2) is trivial. You MUST do better than that.
+
+Example:
+
+Input: nums = [-2,5,-1], lower = -2, upper = 2,
+Output: 3 
+Explanation: The three ranges are : [0,0], [2,2], [0,2] and their respective sums are: -2, -1, 2.
+
+class Solution {
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        int rs=0;
+        long long s=0,l=lower,u=upper;
+        if (nums.empty())
+            return rs;
+        multimap<long long,int>m;//record the sum of nums[0:i] and sort them by the sum
+        for(int i=0;i<nums.size();i++)
+        {
+            s+=nums[i];
+            if (l<=s && s<=u)
+                rs++;
+            m.insert({s,i});
+        }
+        //s(i,j)=s(0:j)-s(0:i)
+        s=0;
+        if (upper>0 && lower<0)
+        {
+            s=l;
+            l=0;
+        }
+        if (l>=0 && u>0)
+            count(m,l+0,u+0,rs,true);
+        if (s<0)
+        {
+            u=-1;
+            l=s;
+        }
+        if (u<=0)
+            count(m,-u,-l,rs,false);
+        return rs;
+
+    }
+   void count(multimap<long long,int>&m, long long &&lower, long long &&upper, int& rs, bool natural)
+    {
+        auto i=begin(m),j=begin(m);
+        auto jj=++j;
+        while (1)
+        {
+            while (j!=end(m) && (j->first-i->first)<lower)
+                j++;
+            if (j==end(m))
+                return;
+            jj=j;
+            while (j!=end(m) && (j->first-i->first)<=upper)
+            {                
+                if (i->first==j->first || (natural && j->second>i->second) ||(!natural && i->second>j->second))
+                    rs++;
+                j++;
+            }
+            i++;
+            if (jj==i)
+                jj++;
+            j=jj;
+        }        
+    }
+};
