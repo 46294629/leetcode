@@ -1,0 +1,77 @@
+Input:
+s = "catsanddog"
+wordDict = ["cat", "cats", "and", "sand", "dog"]
+Output:
+[
+  "cats and dog",
+  "cat sand dog"
+]
+Example 2:
+
+Input:
+s = "pineapplepenapple"
+wordDict = ["apple", "pen", "applepen", "pine", "pineapple"]
+Output:
+[
+  "pine apple pen apple",
+  "pineapple pen apple",
+  "pine applepen apple"
+]
+Explanation: Note that you are allowed to reuse a dictionary word.
+Example 3:
+
+Input:
+s = "catsandog"
+wordDict = ["cats", "dog", "sand", "and", "cat"]
+Output:
+[]
+
+DFS或BFS，重点是当s很长或wordDict中很多时如何减少循环次数。方法是记录下中间变量。这是减少迭代次数的重要方法之一
+class Solution {
+public:
+vector wordBreak(string s, vector<string>& wordDict) {
+
+    sort(wordDict.begin(),wordDict.end(),[](const string& a, const string& b){return a.size()<b.size();});
+	//if string a in index[i], it means a==s[i:i+size(a))
+    map<int,vector<string>>index;
+    int b;
+    queue<int>q;
+    q.push(0);
+    while (!q.empty())
+    {
+        b=q.front();
+        q.pop();
+        if (index.find(b)!=index.end() || b==s.size())
+            continue;
+        for(int j=0;j<wordDict.size() && b+wordDict[j].size()<=s.size();j++)
+        {
+            if (!s.compare(b,wordDict[j].size(),wordDict[j]))
+            {
+                index[b].push_back(wordDict[j]);
+                if (index.find(b+wordDict[j].size())==index.end())
+                    q.push(b+wordDict[j].size());
+            }         
+        }
+    }
+	// if string b in wb[i], it means s[i:) can be sentenced to b
+    unordered_map<int,vector<string>>wb;
+    for(auto i=index.rbegin();i!=index.rend();i++)
+    {
+        for(int k=0,t;k!=i->second.size();k++)
+        {
+            t=i->first+i->second[k].size();
+            if (t==s.size())
+                wb[i->first].push_back(i->second[k]);
+            else if (wb.find(t)==wb.end())
+                continue;
+            else
+            {
+                string tt=i->second[k]+" ";
+                for(auto &j:wb[t])
+                    wb[i->first].push_back(tt+j);
+            }
+              
+        }           
+    }
+    return wb[0];
+};
