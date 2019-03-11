@@ -1,0 +1,99 @@
+全排列，就是计算一个string所有可能的排列组合。一个单词s，输出它里面所有字母可能的排列组合。比如"abc"，则有"abc" "acb" "bac" "bca" "cab" "cba"
+对于最普通的全排列算法就是直接用回朔法：
+void allrange(string s,vector<string>&r, int b=0)
+{
+    if (b==s.size())
+    {
+        r.push_back(s);
+        return;
+    }
+    for(int i=b;i<s.size();i++)
+    {
+        swap(s[i],s[b]);
+        allrange(s,r,b+1);
+        swap(s[b],s[i]);
+    }
+}
+
+但是，当单词里有重复字母时，显然上面的方法会带来重复排列。我们希望去重。而如果只在交换前加上判断s[i]!=s[b]，重复仍然有可能发生。比如122，如果只加上这个
+判断，则输出的是122,212,221,212。因此还应该有别的条件。再想，for循环中每次是把s[i]与s[b]交换后计算s[b+1:)的全排列，因此如果有s[i]==s[i']且i<i'，则
+s[i]与s[b]交换后的s[b+1:)全排列就等于s[i']与s[b]交换后的全排列s[b+1:)。因此，如果在b和i'之间存在i且s[i]==s[i']，s[b]就不必再和s[i']进行交换。因此，
+算法变为：
+void allrange(string s,vector<string>&r, int b=0)
+{
+    if (b==s.size())
+    {
+        r.push_back(s);
+        return;
+    }
+    for(int i=b,j=b;i<s.size();i++,j=b)
+    {
+        while (j<i && s[j]!=s[i])
+          j++;
+        if (j<i)
+          continue;
+        swap(s[i],s[b]);
+        allrange(s,r,b+1);
+        swap(s[b],s[i]);
+    }
+}
+
+如果希望输出的全排列是按照字典顺序输出的，则需要先对string作处理使得一开始是最小的字典顺序（可以使用快排/堆排），然后再使用上面的算法。由于上面的算法
+是从后往前调换，因此如果一开始字典顺序最小，则总可以按照字典顺序输出全排。
+
+变题：小易在学校中学习了关于字符串的理论, 于是他基于此完成了一个字典的项目。
+小易的这个字典很奇特, 字典内的每个单词都包含n个'a'和m个'z', 并且所有单词按照字典序排列。
+小易现在希望你能帮他找出第k个单词是什么。
+比如对于“aaaazz”，则k=3时单词为"aaazza"
+
+//当单词里只有两种字母时，比如"aaaazzzz"，则变成了分组问题。假设有n个a与m个z，则问题是把m个z分为n+1组(n个a加上头尾就有n+1个空隙），每组可以为空，
+//问有多少种分法。由于每组可以为空，我们不妨再加入n+1个z，转变为求把m+n+1个z分为n+1组，每组不为空，问有多少种分法。分完后每组各减去一个z，
+//就相当于原问题的分法。因此，共有C(m+n+1，n+1)种分法。
+
+#include <iostream>
+using namespace std;
+int main()
+{
+    int n,m;
+    long long k,num=1,num0=0;
+    cin>>n>>m>>k;
+    if (k==1)
+    {
+        cout<<string(n,'a')+string(m,'z');
+        return 0;
+    }
+    string s;
+    int i=1;
+    while (n && m)
+    {
+        while (num<k && i<=n)//num为m个z分为i+1组的分法。当num>=k时，代表第k个单词中m个z只能在从后往前的i+1个空格处移动，即前n-i个字母都是a，
+                             //第n-i+1个字母为z
+        {
+            num0=num;
+            num*=(m+i);
+            num/=i++;
+        }
+        if (s.empty() && i>n && num!=k)
+        {
+            cout<<-1;
+            return 0;
+        }       
+        s.append(n-(i-1),'a');//由于while循环中总是i++，因此此时i已经+1，因此此时i代表m个z只能再从后往前i个空格处移动，即后面有i-1个a
+        n=i-1;
+        if (k==num)
+        {
+            s.append(m,'z');
+            m=0;
+            break;
+        }
+        s.push_back('z');
+        m--;
+        k-=num0;
+        num=1;
+        i=1;
+    }
+    if (m)
+        cout<<s+string(m,'z');
+    else
+        cout<<s+string(n,'a');
+}
