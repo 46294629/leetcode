@@ -1,0 +1,71 @@
+Sort a linked list in O(n log n) time using constant space complexity.
+
+Example 1:
+
+Input: 4->2->1->3
+Output: 1->2->3->4
+Example 2:
+
+Input: -1->5->3->4->0
+Output: -1->0->3->4->5
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        ListNode *p=head;
+        int size=0;
+        while (p)
+        {
+            size++;
+            p=p->next;
+        }
+        return mergesort(head,size);
+    }
+    ListNode* mergesort(ListNode*p,int size)
+    {
+        if (size<=1)
+            return p;
+        ListNode*pp=p,*p0=p;
+        for(int i=0;i<size/2;i++)
+        {
+            p0=pp;
+            pp=pp->next;
+        }
+        p0->next=nullptr;//这一句不能漏，需要把一个链表断开为两个，则前半个链表的末尾元素的next需要改为nullptr
+        p=mergesort(p,size/2);
+        pp=mergesort(pp,size-size/2);
+        if (!p)
+            return pp;
+        if (!pp)
+            return p;
+        ListNode*h=new ListNode(0);
+        p0=h;
+        while (p && pp)
+        {
+            if (p->val<pp->val)
+            {
+                p0->next=p;
+                p=p->next;
+            }               
+            else
+            {
+                p0->next=pp;
+                pp=pp->next;
+            }                
+            p0=p0->next;
+        }
+        if (p)
+            p0->next=p;
+        if (pp)
+            p0->next=pp;
+        return h->next;
+    }
+};
