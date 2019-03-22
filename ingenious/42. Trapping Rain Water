@@ -1,0 +1,72 @@
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to 
+trap after raining.
+
+Example:
+
+Input: [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+
+class Solution {
+public:
+    int trap(vector<int>& h) {
+        if (h.empty() || h.size()<3)
+            return 0;
+        //先从左至右找到一部分可以储水的地方，再从右至左找刚刚没找到的可以储水的地方
+        int left=0,right=left+1,result=0;
+        while (1)
+        {
+            while (right<h.size() && h[right]<h[left])
+                right++;    
+            if (right==h.size())
+                break;
+            for(int j=left+1;j<right;j++)
+                result+=h[left]-h[j];
+            left=right++;
+        }
+        right--;
+        left=right-1;
+        while (1)
+        {
+            while (left>-1 && h[left]<=h[right])//由于h[left]==h[right]已经被上一种情况采纳，故此处需要为<=而非<
+                left--;
+            if (left==-1)
+                return result;
+            for(int j=right-1;j>left;j--)
+                result+=h[right]-h[j];
+            right=left--;
+        }
+
+        
+        //另一种方法，用栈
+        stack<int>s;
+        int i=0,result=0;
+        while (i<s.size() && h[i]<=h[i+1])
+            i++;
+        while (i<h.size())
+        {
+            while (!s.empty() && h[i]>h[s.top()])
+            {
+                if (s.size()==1)
+                {
+                    for(int j=s.top()+1;j<i;j++)
+                        result+=h[s.top()]-h[j];
+                }
+                s.pop();                                        
+            }
+            s.push(i++);
+        }
+        if (s.empty())
+            return result;
+        while (1)
+        {
+            i=s.top();
+            s.pop();
+            if (s.empty())
+                return result;
+            for(int j=s.top()+1;j<i;j++)
+                result+=h[i]-h[j];
+            
+        }
+        
+    }
+};
