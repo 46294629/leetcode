@@ -1,0 +1,64 @@
+问题可以分为三部分：
+1.找出两个子节点的最小公共父节点
+2.计算最小公共父节点分别到两个子节点的距离
+3.把2中计算到的距离相加
+
+对于问题1，可以使用二分法和深度标记法
+
+对于二分法，由于两个子节点肯定是位于最小公共父节点的左右两侧，因此必然是一个子节点小于等于公共父节点，一个大于等于。因此对于节点p，如果大于等于两个节点，
+则往p的左子树找；如果小于等于两个子节点则往p的右子树找，如果刚好一大一小则就是节点p。
+
+TreeNode* LowestAncestor1 (TreeNode*p,const TreeNode*l,const TreeNode*r)
+{
+  if (p->val>=left->val && p->val<=right->val)
+    return p;
+  if (p>val>=right->val)
+    return LowestAncestor(p->left,l,r);
+  return LowestAncestor(p->right,l,r);
+}
+
+深度标记法：由于两个子节点肯定在左右两侧，因此对节点的左右子树分别查找子节点。如果在该节点的左子树找到左节点而右子树找到右节点，则该节点为最小公共父节点，
+否则如果左子树找到了左节点而右子树没有，则证明要去该节点的兄弟节点（即父节点的右孩）的右子树查看；如果右子树找到而左子树没有则要去该节点的右子树处查找。
+当找到了这个最小公共父节点后就返回这个节点。于如果不是这个父节点的话，那么两个子节点肯定出现在其他节点的同侧。
+
+TreeNode* LowestAncestor2 (TreeNode*p,const TreeNode*l,const TreeNode*r)
+{
+  if (p==nullptr || p==l || p==r)
+    return p;
+  TreeNode*left=LowestAncestor2(p->left,l,r);
+  TreeNode*right=LowestAncestor2(p->right,l,r);
+  if (left && right)
+    return p;
+  return left==nullptr?right:left; 
+}
+
+对于问题2，在找到了最小公共父节点后计算两个节点到自己的长度:
+int calDepth(TreeNode*p,TreeNode*child)//此处p为最小公共父节点的左节点或右节点。但计算的距离是节点到父节点的距离
+{
+  if (!p)
+    return 0;
+  if (p==child)//由于是到父节点的距离，因此此处返回1而非0.同时返回1可以与p=null的情况区分
+    return 1;
+  int length=calDepth(p->left,child);
+  if (length)
+    retrurn 1+length;
+  return 1+calDepth(p->right,child);
+}
+
+  
+int main()
+{
+  int a,b;
+  cin>>a>>b;
+  TreeNode*l=new TreeNode(min(a,b));
+  TreeNode*r=new TreeNode(max(a,b));
+  TreeNode*root=nullptr;
+  cin>>root;
+  //使用二分法
+  TreeNode*p=LowestAncestor1(root,l,r);
+  //使用深度优先
+  //TreeNode*p=LowestAncestor2(root,l,r);
+  cout<<calDepth(p->left,l)+calDepth(p->right,r);
+  
+}
+  
