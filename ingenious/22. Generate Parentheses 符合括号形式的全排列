@@ -1,0 +1,34 @@
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+For example, given n = 3, a solution set is:
+
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+//在一个合格的括号排序中，对于任意一个右括号，它前面的左括号总数量总是大于前面的右括号总数量。
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        vector<string>sv;
+        string s="";
+        getParentheses(sv,s,n,n);
+        return sv;
+    }
+    void getParentheses(vector<string>&sv,string s, int left, int right)
+    {
+        if (!left && !right)
+        {
+            sv.push_back(s);
+            return;
+        }
+        if (left)
+            getParentheses(sv,s+"(",left-1,right);
+        if (right>left)
+            getParentheses(sv,s+")",left,right-1);
+
+    }
+};
