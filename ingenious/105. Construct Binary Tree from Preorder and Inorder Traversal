@@ -1,0 +1,47 @@
+Given preorder and inorder traversal of a tree, construct the binary tree.
+
+Note:
+You may assume that duplicates do not exist in the tree.
+
+For example, given
+
+preorder = [3,9,20,15,7]
+inorder = [9,3,15,20,7]
+
+Return the following binary tree:
+    3
+   / \
+  9  20
+    /  \
+   15   7
+   
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        
+        return build(preorder,inorder,0,0,inorder.size());
+    }
+    //bp为preorder开始，bi为inorder开始，length为长度。由于preorder为先序，因此preorder[bp]肯定为父节点。然后在inorder[bi,bi+length)中找到
+    //preorder[bp]，则在它之前的为父节点的左子树，之后的为右子树。用递归对左右子树求解
+    TreeNode* build(vector<int>& preorder, vector<int>& inorder,int bp, int bi, int length)
+    {
+        if (bp>=preorder.size() || !length)
+            return nullptr;
+        TreeNode*h=new TreeNode(preorder[bp]);
+        int i=0;
+        while (i<length && inorder[bi+i]!=preorder[bp])
+            i++;
+        h->left=build(preorder,inorder,bp+1,bi,i);
+        h->right=build(preorder,inorder,bp+1+i,bi+1+i,length-i-1);
+        return h;
+    }
+};
