@@ -1,0 +1,53 @@
+Given a binary tree, flatten it to a linked list in-place.
+
+For example, given the following tree:
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+The flattened tree should look like:
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+          
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        TreeNode*pre=nullptr;
+        flat(root,pre);
+    }
+    
+    //相当于是后序遍历的反方向版，因此每次last都为r的后序遍历的下一个节点
+    void flat(TreeNode* r,TreeNode*&last)
+    {
+        if (!r)
+            return;
+        flat(r->right,last);
+        flat(r->left,last);
+        
+        r->right=last;
+        r->left=nullptr;
+        last=r;
+        
+    }
+};
