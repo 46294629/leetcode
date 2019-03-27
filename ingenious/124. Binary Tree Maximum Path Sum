@@ -1,6 +1,25 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@46294629 Sign out
+1
+0 0 46294629/leetcode
+ Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
+leetcode/ingenious/maximum path sum of binary tree
+@46294629 46294629 Update and rename Given a non-empty binary tree, find the maximum pat…
+4e182db 13 days ago
+65 lines (51 sloc)  1.32 KB
+    
 Given a non-empty binary tree, find the maximum path sum.
 
-For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The path must contain at least one node and does not need to go through the root.
+For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child 
+connections. The path must contain at least one node and does not need to go through the root.
 
 Example 1:
 
@@ -11,6 +30,7 @@ Input: [1,2,3]
      2   3
 
 Output: 6
+
 Example 2:
 
 Input: [-10,9,20,null,null,15,7]
@@ -22,3 +42,42 @@ Input: [-10,9,20,null,null,15,7]
    15   7
 
 Output: 42
+
+//attention!!!!! a path means a straight line can go accorss all numbers in the path.so for
+         5
+        / \
+       4   8
+      /   / \
+     11  13  4
+    /  \      \
+   7    2      1
+   the answer should be 48 instead of 55
+         5
+        / \
+       4   8
+      /   / 
+     11  13  
+    /         
+   7           one straight line can go through it.
+   
+   class Solution {
+public:
+    int maxPathSum(TreeNode* root) {
+        int max_s=root->val;
+        int l=sum(root,max_s);
+        return max(max_s,l);
+    }
+    int sum(TreeNode* root,int& max_s)
+    {
+        if (!root)
+            return INT_MIN;
+        int left=sum(root->left,max_s);
+        int right=sum(root->right,max_s);
+        
+        int bigger=max(left,right);
+        max_s=max(max_s,max(root->val+max(0,right)+max(0,left),max(0,root->val)+bigger));
+          
+        return root->val+max(bigger,0);
+    }
+};
+
