@@ -1,21 +1,4 @@
-Skip to content
- 
-Search or jump to…
 
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@46294629 Sign out
-1
-0 0 46294629/leetcode
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
-leetcode/ingenious/maximum path sum of binary tree
-@46294629 46294629 Update and rename Given a non-empty binary tree, find the maximum pat…
-4e182db 13 days ago
-65 lines (51 sloc)  1.32 KB
-    
 Given a non-empty binary tree, find the maximum path sum.
 
 For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child 
