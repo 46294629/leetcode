@@ -1,0 +1,79 @@
+Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+
+For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+
+Example:
+
+Given the sorted linked list: [-10,-3,0,5,9],
+
+One possible answer is: [0,-3,9,-10,null,5], which represents the following height balanced BST:
+
+      0
+     / \
+   -3   9
+   /   /
+ -10  5
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    
+    //把树的结构构造和树的值构造分离。先构造BST结构的树，再以中序遍历的方式把数值放入合适的位置
+    //由于BST对高度有限制，因此应该使用BFS层次遍历的方法放置。
+    TreeNode* sortedListToBST(ListNode* head) {
+        TreeNode*h=setBST(head);
+        setVal(h,head);
+        return h;
+    }
+    TreeNode* setBST(ListNode*head)
+    {
+        if (!head)
+            return nullptr;
+        queue<TreeNode*>q;
+        TreeNode*p=new TreeNode(head->val),*h=p;
+        q.push(p);
+        head=head->next;
+        while (head)
+        {
+            p=q.front();
+            q.pop();
+            push(q,head,p->left);
+            push(q,head,p->right);
+        }
+        return h;
+    }
+    void push(queue<TreeNode*>&q,ListNode*&head,TreeNode*&p)
+    {
+        if (!head)
+            return;
+        p=new TreeNode(head->val);
+        q.push(p);
+        head=head->next;
+    }
+    void setVal(TreeNode*h,ListNode*&head)
+    {
+        if (!h)
+            return;
+        setVal(h->left,head);
+        h->val=head->val;
+        head=head->next;
+        setVal(h->right,head);
+    }
+};
