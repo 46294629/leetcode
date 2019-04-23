@@ -1,0 +1,124 @@
+Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1 ... n.
+
+Example:
+
+Input: 3
+Output:
+[
+  [1,null,3,2],
+  [3,2,null,1],
+  [3,1,null,null,2],
+  [2,1,3],
+  [1,null,2,null,3]
+]
+Explanation:
+The above output corresponds to the 5 unique BST's shown below:
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+   
+   
+   /**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<TreeNode*> generateTrees(int n) {
+        if (!n)
+            return {};
+
+        return construct(1,n);
+    }
+    vector<TreeNode*> construct(int left,int right)
+    {
+        if (left>right)
+            return {nullptr};//注意这里不是返回空数组，而是返回包含一个空指针的数组。这样才能正确构造head
+        vector<TreeNode*>v;      
+        //该head可取值从left到right，head取值后，左子树可取值从left到head->val-1，右子树可取值从head->val+1到right
+        for (int i=left;i<=right;i++)
+        {
+            vector<TreeNode*> leftv=construct(left,i-1);
+            vector<TreeNode*> rightv=construct(i+1,right);
+            for (auto j:leftv)
+            {
+                for (auto k:rightv)
+                {
+                    TreeNode*head=new TreeNode(i);
+                    head->left=j;
+                    head->right=k;
+                    v.push_back(head);
+                }
+            }
+        }
+        return v;
+    }
+};
+
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<TreeNode*> generateTrees(int n) {
+        if (!n)
+            return {};
+        return construct(n);
+    }
+    vector<TreeNode*> construct(int n)
+    {
+        if (n==1)
+            return {new TreeNode(1)};
+        vector<TreeNode*>v=construct(n-1);//每次n多1时，其实就是在原来n的基础上加入一个最右节点    
+        TreeNode*head=nullptr,*p=nullptr;
+        for (int i=0,size=v.size();i<size;i++)
+        {
+            head=new TreeNode(n);
+            head->left=v[i];
+            v[i]=head;
+            head=head->left;
+            TreeNode*prehead=head;
+            while (prehead)
+            {
+                v.push_back(copyAdd(head,prehead,n));
+                prehead=prehead->right;
+            }
+
+        }
+        return v;
+    }
+    TreeNode* copyAdd(TreeNode*head,TreeNode* const& prehead,const int& n)
+    {
+        if (!head)
+            return nullptr;
+        TreeNode*l=copyAdd(head->left,prehead,n);
+        TreeNode*r=copyAdd(head->right,prehead,n);
+        TreeNode*h=new TreeNode(head->val);
+        h->left=l;
+        if (h->val==prehead->val)
+        {
+            TreeNode*p=new TreeNode(n);
+            h->right=p;
+            p->left=r;
+        }
+        else
+            h->right=r;        
+        return h;
+    }
+};
